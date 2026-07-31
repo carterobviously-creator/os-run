@@ -158,6 +158,9 @@ class VMManager {
     this._emit('status', { text: 'Configuring virtual machine…', sub: '' });
 
     // 2. Build the V86 config
+    // autostart is intentionally false: we construct the emulator, attach listeners,
+    // and then call run() explicitly. This prevents the UI from freezing immediately
+    // if the image is missing or invalid.
     const config = {
       wasm_path:       wasmUrl,
       memory_size:     memoryMB    * 1024 * 1024,
@@ -165,7 +168,7 @@ class VMManager {
       screen_container: screenContainer,
       bios:     { url: biosUrl    },
       vga_bios: { url: vgaBiosUrl },
-      autostart: true,
+      autostart: false,
     };
 
     // Boot device
@@ -217,6 +220,14 @@ class VMManager {
         this._serialBuf += char;
         this._emit('serial-char', char);
       });
+    }
+
+    // 5. Start the emulator explicitly now that everything is wired up.
+    this._emit('status', { text: 'Starting CPU…', sub: `${memoryMB} MB RAM` });
+    try {
+      this._vm.run();
+    } catch (err) {
+      throw new Error('Failed to start v86 CPU: ' + err.message);
     }
   }
 
