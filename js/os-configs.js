@@ -25,11 +25,89 @@
  */
 
 // eslint-disable-next-line no-unused-vars
+const PREMADE_ISOS = {
+
+  /* ── Tiny Core Linux ───────────────────────────────────────── */
+  tinycore: {
+    id: 'tinycore',
+    name: 'Tiny Core Linux',
+    icon: '🐧',
+    description: 'Tiny Core Linux — a minimal 16 MB desktop distro, ready to boot.',
+    bootDevice: 'cdrom',
+    memoryMB: 128,
+    vgaMemoryMB: 8,
+    imageUrl: 'https://copy.sh/v86/images/tinycore.iso',
+    source: 'premade',
+    note: 'Hosted by the v86 project. Tiny Core boots quickly and works great in the browser.',
+  },
+
+  /* ── FreeDOS ────────────────────────────────────────────────── */
+  freedos: {
+    id: 'freedos',
+    name: 'FreeDOS',
+    icon: '💾',
+    description: 'FreeDOS — free, open-source DOS compatible with MS-DOS software.',
+    bootDevice: 'cdrom',
+    memoryMB: 64,
+    vgaMemoryMB: 2,
+    imageUrl: 'https://copy.sh/v86/images/freedos722.iso',
+    source: 'premade',
+    note: 'Hosted by the v86 project. FreeDOS 7.22 live ISO, ready to run.',
+  },
+
+  /* ── Windows 95 ─────────────────────────────────────────────── */
+  win95: {
+    id: 'win95',
+    name: 'Windows 95',
+    icon: '🪟',
+    description: 'Windows 95 pre-installed hard-disk image, ready to boot.',
+    bootDevice: 'hdd',
+    memoryMB: 64,
+    vgaMemoryMB: 4,
+    imageUrl: 'https://copy.sh/v86/images/windows95.img',
+    source: 'premade',
+    note: 'Hosted by the v86 project. Large image — may take a moment to download.',
+  },
+
+  /* ── KolibriOS ──────────────────────────────────────────────── */
+  kolibri: {
+    id: 'kolibri',
+    name: 'KolibriOS',
+    icon: '🦋',
+    description: 'KolibriOS — tiny, fast graphical OS written in assembly.',
+    bootDevice: 'cdrom',
+    memoryMB: 128,
+    vgaMemoryMB: 8,
+    imageUrl: 'https://copy.sh/v86/images/kolibri.iso',
+    source: 'premade',
+    note: 'Hosted by the v86 project. Boots in seconds with a full GUI.',
+  },
+
+  /* ── macOS Tahoe 26 ─────────────────────────────────────────── */
+  tahoe: {
+    id: 'tahoe',
+    name: 'macOS Tahoe 26',
+    icon: '🍎',
+    description: 'macOS Tahoe (26) — demo placeholder entry for the newest macOS release.',
+    bootDevice: 'cdrom',
+    memoryMB: 4096,
+    vgaMemoryMB: 16,
+    imageUrl: '',
+    source: 'premade',
+    note: 'A public, browser-bootable Tahoe 26 ISO is not available. Use this entry as a ' +
+          'placeholder/template, or supply your own compatible x86/Hackintosh ISO below.',
+    noteType: 'warning',
+    allowsCustomImage: true,
+  },
+};
+
+// eslint-disable-next-line no-unused-vars
 const OS_CONFIGS = {
 
   /* ── Linux ─────────────────────────────────────────────────── */
   linux: {
     id: 'linux',
+    source: 'custom',
     name: 'Linux',
     icon: '🐧',
     description: 'Boot any Linux distribution from a live ISO or a pre-installed disk image.',
@@ -56,6 +134,7 @@ const OS_CONFIGS = {
   /* ── FreeDOS ────────────────────────────────────────────────── */
   freedos: {
     id: 'freedos',
+    source: 'custom',
     name: 'FreeDOS',
     icon: '💾',
     description: 'Free, open-source DOS implementation — compatible with MS-DOS programs and games.',
@@ -76,6 +155,7 @@ const OS_CONFIGS = {
   /* ── Windows ────────────────────────────────────────────────── */
   windows: {
     id: 'windows',
+    source: 'custom',
     name: 'Windows',
     icon: '🪟',
     description: 'Run classic Windows versions using a pre-installed hard-disk image (.img).',
@@ -100,6 +180,7 @@ const OS_CONFIGS = {
   /* ── macOS ──────────────────────────────────────────────────── */
   macos: {
     id: 'macos',
+    source: 'custom',
     name: 'macOS',
     icon: '🍎',
     description: 'Run macOS via a Hackintosh-compatible x86 ISO. Provide your own image file.',
@@ -139,6 +220,7 @@ const OS_CONFIGS = {
   /* ── Custom ─────────────────────────────────────────────────── */
   custom: {
     id: 'custom',
+    source: 'custom',
     name: 'Custom',
     icon: '⚙️',
     description: 'Boot any x86 operating system from a custom ISO, hard-disk image, or floppy image.',

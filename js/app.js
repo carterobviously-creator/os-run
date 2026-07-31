@@ -21,18 +21,30 @@ const DEFAULTS = {
    ================================================================ */
 class OSRunApp {
   constructor() {
-    this._selectedOS      = 'linux';
-    this._imageBuffer     = null;   // ArrayBuffer from a local file upload
-    this._snapshotBuffer  = null;   // saved state ArrayBuffer
+    this._source          = 'premade'; // 'premade' | 'custom'
+    this._selectedOS      = { premade: 'tinycore', custom: 'linux' };
+    this._imageBuffer     = null;      // ArrayBuffer from a local file upload
+    this._snapshotBuffer  = null;      // saved state ArrayBuffer
     this._vm              = new VMManager();
 
     this._bindElements();
+    this._bindTabEvents();
     this._bindCardEvents();
     this._bindToolbarEvents();
     this._bindConsoleEvents();
 
-    // Render initial config panel for the default OS
-    this._renderConfig(this._selectedOS);
+    // Render initial OS cards and config panel for the default source
+    this._renderSourceTabs();
+    this._renderOSCards();
+    this._renderConfig(this._selectedOSForSource);
+  }
+
+  /**
+   * Return the currently selected OS id for the active source tab.
+   * @returns {string}
+   */
+  get _selectedOSForSource() {
+    return this._selectedOS[this._source];
   }
 
   // ─── Element references ──────────────────────────────────
@@ -40,7 +52,9 @@ class OSRunApp {
   _bindElements() {
     this.launcher       = this._el('launcher');
     this.vmSection      = this._el('vmSection');
+    this.sourceTabs     = this._el('sourceTabs');
     this.osCards        = this._el('osCards');
+    this.osCardsTitle   = this._el('osCardsTitle');
     this.configPanel    = this._el('configPanel');
     this.launchBtn      = this._el('launchBtn');
     this.backBtn        = this._el('backBtn');
@@ -62,21 +76,76 @@ class OSRunApp {
     this.serialOut      = this._el('serialOutput');
   }
 
+  /**
+   * Return the configuration object for the currently selected OS.
+   * Looks in PREMADE_ISOS when the premade tab is active, otherwise OS_CONFIGS.
+   * @returns {Object|undefined}
+   */
+  _currentConfig() {
+    return this._source === 'premade'
+      ? PREMADE_ISOS[this._selectedOSForSource]
+      : OS_CONFIGS[this._selectedOSForSource];
+  }
+
   _el(id) { return document.getElementById(id); }
 
-  // ─── OS card selection ───────────────────────────────────
+  // ─── Source tabs ─────────────────────────────────────────
 
-  _bindCardEvents() {
+  _bindTabEvents() {
+    this.sourceTabs.querySelectorAll('.source-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const newSource = tab.dataset.source;
+        if (newSource === this._source) return;
+        this._source = newSource;
+        this._imageBuffer = null;
+        this._renderSourceTabs();
+        this._renderOSCards();
+        this._renderConfig(this._selectedOSForSource);
+      });
+    });
+  }
+
+  _renderSourceTabs() {
+    this.sourceTabs.querySelectorAll('.source-tab').forEach(tab => {
+      const active = tab.dataset.source === this._source;
+      tab.classList.toggle('active', active);
+      tab.setAttribute('aria-selected', String(active));
+    });
+  }
+
+  /**
+   * Render the OS cards for the currently active source.
+   */
+  _renderOSCards() {
+    const configs = this._source === 'premade' ? PREMADE_ISOS : OS_CONFIGS;
+    const cards = Object.values(configs).map(cfg => `
+      <button class="os-card${cfg.id === this._selectedOSForSource ? ' active' : ''}"
+              data-os="${this._esc(cfg.id)}" type="button">
+        <span class="os-icon" aria-hidden="true">${this._esc(cfg.icon)}</span>
+        <span class="os-name">${this._esc(cfg.name)}</span>
+        <span class="os-desc">${this._esc(cfg.description)}</span>
+      </button>
+    `).join('');
+
+    this.osCards.innerHTML = cards;
+    this.osCardsTitle.textContent = this._source === 'premade'
+      ? 'Select Pre-made Operating System'
+      : 'Select Custom Operating System';
+
     this.osCards.querySelectorAll('.os-card').forEach(card => {
       card.addEventListener('click', () => {
         this.osCards.querySelectorAll('.os-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
-        this._selectedOS = card.dataset.os;
+        this._selectedOS[this._source] = card.dataset.os;
         this._imageBuffer = null;
-        this._renderConfig(this._selectedOS);
+        this._renderConfig(this._selectedOSForSource);
       });
     });
+  }
 
+  // ─── OS card selection ───────────────────────────────────
+
+  _bindCardEvents() {
     this.launchBtn.addEventListener('click', () => this._launchVM());
   }
 
@@ -148,13 +217,13 @@ class OSRunApp {
    * @param {string} osId
    */
   _renderConfig(osId) {
-    const cfg = OS_CONFIGS[osId];
+    const cfg = this._source === 'premade' ? PREMADE_ISOS[osId] : OS_CONFIGS[osId];
     if (!cfg) return;
 
-    const variantsHtml = cfg.variants.map(v =>
+    const variantsHtml = cfg.variants?.map(v =>
       `<option value="${this._esc(v.id)}" data-memory="${v.memoryMB || cfg.memoryMB}" `+
       `data-boot="${v.bootDevice || cfg.bootDevice}">${this._esc(v.name)}</option>`,
-    ).join('');
+    ).join('') || '';
 
     let noteHtml = '';
     if (cfg.note) {
@@ -167,8 +236,23 @@ class OSRunApp {
         </div>`;
     }
 
+    const isPremade = cfg.source === 'premade';
     let imageHtml = '';
-    if (cfg.requiresImage) {
+    if (isPremade) {
+      // Premade entries already have a known image URL. Show it (optionally editable
+      // for entries like Tahoe that allow a custom override).
+      const readonly = cfg.allowsCustomImage ? '' : 'readonly';
+      const placeholder = cfg.imageUrl || 'https://example.com/os.iso';
+      imageHtml = `
+        <div class="config-group">
+          <label class="config-label" for="imageUrl">${cfg.allowsCustomImage ? 'Image URL (optional override)' : 'Pre-installed Image URL'}</label>
+          <input type="url" class="config-input" id="imageUrl"
+            value="${this._esc(cfg.imageUrl || '')}"
+            placeholder="${this._esc(placeholder)}"
+            ${readonly} autocomplete="off" spellcheck="false">
+          ${cfg.allowsCustomImage ? '' : '<p class="config-hint">This image is provided by the pre-made preset.</p>'}
+        </div>`;
+    } else if (cfg.requiresImage) {
       imageHtml = `
         <div class="config-group">
           <label class="config-label" for="imageUrl">${this._esc(cfg.imageLabel)}</label>
@@ -198,11 +282,14 @@ class OSRunApp {
         </select>
       </div>` : '';
 
-    const html = `
+    const variantGroupHtml = variantsHtml ? `
       <div class="config-group">
         <label class="config-label" for="variantSelect">Variant / Version</label>
         <select class="config-select" id="variantSelect">${variantsHtml}</select>
-      </div>
+      </div>` : '';
+
+    const html = `
+      ${variantGroupHtml}
 
       <div class="config-group">
         <label class="config-label" for="memoryRange">
@@ -366,13 +453,13 @@ class OSRunApp {
   // ─── VM launch ───────────────────────────────────────────
 
   async _launchVM() {
-    const cfg = OS_CONFIGS[this._selectedOS];
+    const cfg = this._currentConfig();
     if (!cfg) return;
 
     // ── Gather config values ──
     const memoryMB      = parseInt(this._val('memoryRange')    || cfg.memoryMB,    10);
     const vgaMemoryMB   = parseInt(this._val('vgaMemRange')    || cfg.vgaMemoryMB, 10);
-    const imageUrl      = (this._val('imageUrl') || '').trim();
+    let   imageUrl      = (this._val('imageUrl') || '').trim();
     const libUrl        = (this._val('libUrl')   || DEFAULTS.libUrl).trim();
     const wasmUrl       = (this._val('wasmUrl')  || DEFAULTS.wasmUrl).trim();
     const biosUrl       = (this._val('biosUrl')  || DEFAULTS.biosUrl).trim();
@@ -393,12 +480,23 @@ class OSRunApp {
     const variantName = selectedVar?.text?.split('—')[0]?.trim() || '';
     const title = variantName ? `${cfg.name} — ${variantName}` : cfg.name;
 
+    // For premade presets, fall back to the built-in image URL if the user left the field empty
+    const isPremade = cfg.source === 'premade';
+    if (isPremade && !imageUrl && cfg.imageUrl) {
+      imageUrl = cfg.imageUrl;
+    }
+
     // ── Validate ──
-    if (cfg.requiresImage && !imageUrl && !this._imageBuffer) {
-      alert(
-        `Please provide a ${cfg.imageLabel}.\n\n` +
-        `Either paste a URL into the image field, or click "Upload File" to choose a local file.`,
-      );
+    const needsImage = cfg.requiresImage || (isPremade && !cfg.imageUrl);
+    if (needsImage && !imageUrl && !this._imageBuffer) {
+      if (isPremade) {
+        alert('This pre-made preset does not have a built-in image URL. Please enter one in the Image URL field.');
+      } else {
+        alert(
+          `Please provide a ${cfg.imageLabel}.\n\n` +
+          `Either paste a URL into the image field, or click "Upload File" to choose a local file.`,
+        );
+      }
       return;
     }
 

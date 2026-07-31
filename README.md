@@ -10,7 +10,8 @@ No server-side code. No installation. No plugins.
 | Feature | Detail |
 |---|---|
 | **Pure browser** | CPU emulation via v86 WebAssembly — zero server involvement |
-| **Any x86 OS** | Linux, FreeDOS, Windows 3.1/95/98/ME/2000/XP, macOS, custom ISOs |
+| **Pre-made OS tab** | One-click presets: Tiny Core Linux, FreeDOS, Windows 95, KolibriOS, macOS Tahoe 26 |
+| **Custom OS tab** | Linux, FreeDOS, Windows 3.1/95/98/ME/2000/XP, macOS, or any custom ISO |
 | **macOS support** | All versions listed — Sierra through Tahoe — when you supply a compatible ISO |
 | **Local file upload** | Drag-and-drop or pick any `.iso` / `.img` from your disk — it never leaves your browser |
 | **Remote ISO** | Paste a URL; v86 streams and decompresses the image on-the-fly |
@@ -54,18 +55,32 @@ Then open `http://localhost:8080`.
 
 ## 🖥️ Supported Operating Systems
 
-### Linux
+### Pre-made OS
+Ready-to-boot presets hosted on public v86 demo mirrors. Select the **📦 Pre-made OS** tab, pick an OS, and click **Launch VM** — no image URL required.
+
+| Preset | Image | Notes |
+|---|---|---|
+| Tiny Core Linux | `copy.sh/v86/images/tinycore.iso` | Minimal 16 MB desktop, boots in seconds |
+| FreeDOS | `copy.sh/v86/images/freedos722.iso` | Free DOS-compatible OS |
+| Windows 95 | `copy.sh/v86/images/windows95.img` | Pre-installed HDD image; larger download |
+| KolibriOS | `copy.sh/v86/images/kolibri.iso` | Tiny GUI OS written in assembly |
+| macOS Tahoe 26 | *(placeholder)* | No public browser-bootable ISO yet; supply your own |
+
+### Custom OS
+Select the **⚙️ Custom OS** tab to supply your own image.
+
+#### Linux
 Any distribution that fits in an x86 ISO or disk image.  
 Tested examples: Alpine Linux, Debian, Kali, Arch, Ubuntu, Tiny Core Linux.
 
-### FreeDOS
+#### FreeDOS
 FreeDOS 1.2 and 1.3 — boot from ISO or a pre-installed HDD image.  
 Download ready-made images from [freedos.org](https://www.freedos.org/download/).
 
-### Windows
+#### Windows
 Pre-installed raw disk images (`.img`) of Windows 3.1, 95, 98 SE, ME, 2000, XP.
 
-### macOS
+#### macOS
 v86 emulates **x86** hardware, so any macOS version that runs on x86 Intel is supported when you supply an appropriate ISO:
 
 | Version | Status |
@@ -78,7 +93,7 @@ v86 emulates **x86** hardware, so any macOS version that runs on x86 Intel is su
 
 You must supply your own ISO image. The emulator enforces no restrictions on which ISO you load.
 
-### Custom
+#### Custom
 Point the boot device at any x86 ISO (CDROM), raw disk image (HDD), or floppy image.
 
 ---

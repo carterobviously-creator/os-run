@@ -25,7 +25,17 @@
     <!-- ─── Launcher ─────────────────────────────────────────────── -->
     <section id="launcher" class="launcher" aria-label="VM Launcher">
 
-      <h2 class="section-title">Select Operating System</h2>
+      <!-- Source Tabs -->
+      <div class="source-tabs" id="sourceTabs" role="tablist" aria-label="Image source selection">
+        <button class="source-tab active" data-source="premade" type="button" role="tab" aria-selected="true" id="tab-premade">
+          📦 Pre-made OS
+        </button>
+        <button class="source-tab" data-source="custom" type="button" role="tab" aria-selected="false" id="tab-custom">
+          ⚙️ Custom OS
+        </button>
+      </div>
+
+      <h2 class="section-title" id="osCardsTitle">Select Operating System</h2>
 
       <!-- OS Type Cards -->
       <div class="os-cards" id="osCards" role="group" aria-label="Operating system selection">
