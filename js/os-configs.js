@@ -55,18 +55,52 @@ const PREMADE_ISOS = {
     note: 'Hosted by the v86 project. FreeDOS 7.22 live ISO, ready to run.',
   },
 
-  /* ── Windows 95 ─────────────────────────────────────────────── */
-  win95: {
-    id: 'win95',
-    name: 'Windows 95',
-    icon: '🪟',
-    description: 'Windows 95 pre-installed hard-disk image, ready to boot.',
-    bootDevice: 'hdd',
-    memoryMB: 64,
-    vgaMemoryMB: 4,
-    imageUrl: 'https://copy.sh/v86/images/windows95.img',
+  /* ── Ubuntu Linux ──────────────────────────────────────────── */
+  ubuntu: {
+    id: 'ubuntu',
+    name: 'Ubuntu Linux',
+    icon: '🐧',
+    description: 'Ubuntu Linux — a user-friendly desktop distro preset.',
+    bootDevice: 'cdrom',
+    memoryMB: 1024,
+    vgaMemoryMB: 16,
+    imageUrl: '',
     source: 'premade',
-    note: 'Hosted by the v86 project. Large image — may take a moment to download.',
+    note: 'No public browser-bootable Ubuntu ISO is bundled. Supply your own compatible ISO below.',
+    noteType: 'warning',
+    allowsCustomImage: true,
+  },
+
+  /* ── Debian Linux ───────────────────────────────────────────── */
+  debian: {
+    id: 'debian',
+    name: 'Debian Linux',
+    icon: '🐧',
+    description: 'Debian Linux — a stable and widely used distro preset.',
+    bootDevice: 'cdrom',
+    memoryMB: 1024,
+    vgaMemoryMB: 16,
+    imageUrl: '',
+    source: 'premade',
+    note: 'No public browser-bootable Debian ISO is bundled. Supply your own compatible ISO below.',
+    noteType: 'warning',
+    allowsCustomImage: true,
+  },
+
+  /* ── Alpine Linux ───────────────────────────────────────────── */
+  alpine: {
+    id: 'alpine',
+    name: 'Alpine Linux',
+    icon: '🐧',
+    description: 'Alpine Linux — a lightweight distro preset for modern setups.',
+    bootDevice: 'cdrom',
+    memoryMB: 512,
+    vgaMemoryMB: 16,
+    imageUrl: '',
+    source: 'premade',
+    note: 'No public browser-bootable Alpine ISO is bundled. Supply your own compatible ISO below.',
+    noteType: 'warning',
+    allowsCustomImage: true,
   },
 
   /* ── KolibriOS ──────────────────────────────────────────────── */

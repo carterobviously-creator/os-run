@@ -10,7 +10,7 @@ No server-side code. No installation. No plugins.
 | Feature | Detail |
 |---|---|
 | **Pure browser** | CPU emulation via v86 WebAssembly — zero server involvement |
-| **Pre-made OS tab** | One-click presets: Tiny Core Linux, FreeDOS, Windows 95, KolibriOS, macOS Tahoe 26 |
+| **Pre-made OS tab** | Presets for Tiny Core Linux, FreeDOS, Ubuntu Linux, Debian Linux, Alpine Linux, KolibriOS, and macOS Tahoe 26 |
 | **Custom OS tab** | Linux, FreeDOS, Windows 3.1/95/98/ME/2000/XP, macOS, or any custom ISO |
 | **macOS support** | All versions listed — Sierra through Tahoe — when you supply a compatible ISO |
 | **Local file upload** | Drag-and-drop or pick any `.iso` / `.img` from your disk — it never leaves your browser |
@@ -56,13 +56,15 @@ Then open `http://localhost:8080`.
 ## 🖥️ Supported Operating Systems
 
 ### Pre-made OS
-Ready-to-boot presets hosted on public v86 demo mirrors. Select the **📦 Pre-made OS** tab, pick an OS, and click **Launch VM** — no image URL required.
+Some presets are ready to boot from public v86 demo mirrors, while others are lightweight preset entries that use your own ISO when no public image is bundled. Select the **📦 Pre-made OS** tab, pick an OS, and click **Launch VM**.
 
 | Preset | Image | Notes |
 |---|---|---|
 | Tiny Core Linux | `copy.sh/v86/images/tinycore.iso` | Minimal 16 MB desktop, boots in seconds |
 | FreeDOS | `copy.sh/v86/images/freedos722.iso` | Free DOS-compatible OS |
-| Windows 95 | `copy.sh/v86/images/windows95.img` | Pre-installed HDD image; larger download |
+| Ubuntu Linux | *(placeholder)* | Supply a compatible Ubuntu ISO |
+| Debian Linux | *(placeholder)* | Supply a compatible Debian ISO |
+| Alpine Linux | *(placeholder)* | Supply a compatible Alpine ISO |
 | KolibriOS | `copy.sh/v86/images/kolibri.iso` | Tiny GUI OS written in assembly |
 | macOS Tahoe 26 | *(placeholder)* | No public browser-bootable ISO yet; supply your own |
 
