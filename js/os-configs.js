@@ -1,0 +1,157 @@
+/* global OS_CONFIGS */
+'use strict';
+
+/**
+ * OS_CONFIGS — preset configurations for every supported operating system.
+ *
+ * Each top-level key is the OS identifier used by the UI.
+ * Structure:
+ *   id            – matches the key
+ *   name          – human-readable OS family name
+ *   icon          – emoji icon
+ *   description   – short one-liner shown in the config panel
+ *   bootDevice    – default boot device: 'cdrom' | 'hdd' | 'floppy'
+ *   memoryMB      – default RAM allocation in megabytes
+ *   vgaMemoryMB   – default VGA RAM in megabytes
+ *   variants[]    – selectable sub-types (distros, versions, etc.)
+ *     .id         – unique within the OS
+ *     .name       – display name
+ *     .memoryMB   – RAM override for this variant
+ *     .bootDevice – optional boot-device override
+ *   requiresImage – if true the UI shows the image URL / upload field
+ *   imageLabel    – label text for the image field
+ *   imagePlaceholder – placeholder URL hint
+ *   note          – optional informational string shown in the panel
+ */
+
+// eslint-disable-next-line no-unused-vars
+const OS_CONFIGS = {
+
+  /* ── Linux ─────────────────────────────────────────────────── */
+  linux: {
+    id: 'linux',
+    name: 'Linux',
+    icon: '🐧',
+    description: 'Boot any Linux distribution from a live ISO or a pre-installed disk image.',
+    bootDevice: 'cdrom',
+    memoryMB: 256,
+    vgaMemoryMB: 8,
+    variants: [
+      { id: 'alpine',   name: 'Alpine Linux',         memoryMB: 128,  description: 'Minimal, security-focused' },
+      { id: 'debian',   name: 'Debian',               memoryMB: 256,  description: 'Stable & versatile' },
+      { id: 'ubuntu',   name: 'Ubuntu',               memoryMB: 512,  description: 'User-friendly desktop' },
+      { id: 'kali',     name: 'Kali Linux',           memoryMB: 512,  description: 'Penetration testing' },
+      { id: 'arch',     name: 'Arch Linux',           memoryMB: 512,  description: 'Rolling-release, DIY' },
+      { id: 'fedora',   name: 'Fedora',               memoryMB: 1024, description: 'Cutting-edge RHEL upstream' },
+      { id: 'mint',     name: 'Linux Mint',           memoryMB: 1024, description: 'Beginner-friendly Debian/Ubuntu' },
+      { id: 'nixos',    name: 'NixOS',                memoryMB: 1024, description: 'Reproducible, declarative' },
+      { id: 'tinycore', name: 'Tiny Core Linux',      memoryMB: 64,   description: 'World\'s smallest distro' },
+      { id: 'custom',   name: 'Other / Custom distro', memoryMB: 256,  description: 'Any other Linux ISO' },
+    ],
+    requiresImage: true,
+    imageLabel: 'Linux ISO Image',
+    imagePlaceholder: 'https://example.com/linux.iso',
+  },
+
+  /* ── FreeDOS ────────────────────────────────────────────────── */
+  freedos: {
+    id: 'freedos',
+    name: 'FreeDOS',
+    icon: '💾',
+    description: 'Free, open-source DOS implementation — compatible with MS-DOS programs and games.',
+    bootDevice: 'hdd',
+    memoryMB: 64,
+    vgaMemoryMB: 2,
+    variants: [
+      { id: 'freedos13',  name: 'FreeDOS 1.3',        memoryMB: 64 },
+      { id: 'freedos12',  name: 'FreeDOS 1.2',        memoryMB: 64 },
+      { id: 'cdrom',      name: 'FreeDOS (boot from ISO)', memoryMB: 64, bootDevice: 'cdrom' },
+    ],
+    requiresImage: true,
+    imageLabel: 'FreeDOS Disk Image (.img)',
+    imagePlaceholder: 'https://example.com/freedos.img',
+    note: 'Download pre-built FreeDOS images from https://www.freedos.org/download/ or the v86 demo page.',
+  },
+
+  /* ── Windows ────────────────────────────────────────────────── */
+  windows: {
+    id: 'windows',
+    name: 'Windows',
+    icon: '🪟',
+    description: 'Run classic Windows versions using a pre-installed hard-disk image (.img).',
+    bootDevice: 'hdd',
+    memoryMB: 128,
+    vgaMemoryMB: 4,
+    variants: [
+      { id: 'win31',  name: 'Windows 3.1',       memoryMB: 32  },
+      { id: 'win95',  name: 'Windows 95',        memoryMB: 64  },
+      { id: 'win98',  name: 'Windows 98 SE',     memoryMB: 128 },
+      { id: 'winme',  name: 'Windows ME',        memoryMB: 128 },
+      { id: 'win2k',  name: 'Windows 2000',      memoryMB: 256 },
+      { id: 'winxp',  name: 'Windows XP',        memoryMB: 512 },
+    ],
+    requiresImage: true,
+    imageLabel: 'Windows Disk Image (.img)',
+    imagePlaceholder: 'https://example.com/win98.img',
+    note: 'You must supply a pre-installed Windows hard-disk image in raw (.img) format. ' +
+          'These are available from various archival and legal sources.',
+  },
+
+  /* ── macOS ──────────────────────────────────────────────────── */
+  macos: {
+    id: 'macos',
+    name: 'macOS',
+    icon: '🍎',
+    description: 'Run macOS via a Hackintosh-compatible x86 ISO. Provide your own image file.',
+    bootDevice: 'cdrom',
+    memoryMB: 2048,
+    vgaMemoryMB: 16,
+    variants: [
+      { id: 'tiger',        name: 'Mac OS X Tiger (10.4)',         memoryMB: 512  },
+      { id: 'leopard',      name: 'Mac OS X Leopard (10.5)',       memoryMB: 512  },
+      { id: 'snow-leopard', name: 'Mac OS X Snow Leopard (10.6)',  memoryMB: 1024 },
+      { id: 'lion',         name: 'OS X Lion (10.7)',              memoryMB: 2048 },
+      { id: 'mountain',     name: 'OS X Mountain Lion (10.8)',     memoryMB: 2048 },
+      { id: 'mavericks',    name: 'OS X Mavericks (10.9)',         memoryMB: 2048 },
+      { id: 'yosemite',     name: 'OS X Yosemite (10.10)',         memoryMB: 2048 },
+      { id: 'el-capitan',   name: 'OS X El Capitan (10.11)',       memoryMB: 2048 },
+      { id: 'sierra',       name: 'macOS Sierra (10.12)',          memoryMB: 2048 },
+      { id: 'high-sierra',  name: 'macOS High Sierra (10.13)',     memoryMB: 2048 },
+      { id: 'mojave',       name: 'macOS Mojave (10.14)',          memoryMB: 4096 },
+      { id: 'catalina',     name: 'macOS Catalina (10.15)',        memoryMB: 4096 },
+      { id: 'big-sur',      name: 'macOS Big Sur (11)',            memoryMB: 4096 },
+      { id: 'monterey',     name: 'macOS Monterey (12)',           memoryMB: 4096 },
+      { id: 'ventura',      name: 'macOS Ventura (13)',            memoryMB: 8192 },
+      { id: 'sonoma',       name: 'macOS Sonoma (14)',             memoryMB: 8192 },
+      { id: 'sequoia',      name: 'macOS Sequoia (15)',            memoryMB: 8192 },
+      { id: 'tahoe',        name: 'macOS Tahoe (26)',              memoryMB: 8192 },
+    ],
+    requiresImage: true,
+    imageLabel: 'macOS ISO / Disk Image',
+    imagePlaceholder: 'https://example.com/macos-sierra.iso',
+    note: 'v86 emulates x86 hardware. macOS versions up to 10.14 (Mojave) run on x86 ' +
+          'natively and are best supported. Newer versions (Catalina+) require a ' +
+          'Hackintosh ISO with UEFI/OpenCore support. Apple Silicon versions (12+) may ' +
+          'need an ISO that includes x86 emulation. You must supply your own ISO image.',
+    noteType: 'warning',
+  },
+
+  /* ── Custom ─────────────────────────────────────────────────── */
+  custom: {
+    id: 'custom',
+    name: 'Custom',
+    icon: '⚙️',
+    description: 'Boot any x86 operating system from a custom ISO, hard-disk image, or floppy image.',
+    bootDevice: 'cdrom',
+    memoryMB: 256,
+    vgaMemoryMB: 8,
+    variants: [
+      { id: 'cdrom',  name: 'Boot from ISO (CDROM)',       memoryMB: 256, bootDevice: 'cdrom'  },
+      { id: 'hdd',    name: 'Boot from Disk Image (HDD)',  memoryMB: 256, bootDevice: 'hdd'    },
+      { id: 'floppy', name: 'Boot from Floppy Image',      memoryMB: 64,  bootDevice: 'floppy' },
+    ],
+    requiresImage: true,
+    imageLabel: 'OS Image (ISO / IMG)',
+    imagePlaceholder: 'https://example.com/os.iso',
+  },
+};
