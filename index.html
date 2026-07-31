@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OS-Run — Web Virtual Machine</title>
+  <meta name="description" content="Run any x86 operating system entirely in your browser using v86.js WebAssembly CPU emulation. Supports Linux, FreeDOS, Windows 95/98, macOS, and any custom ISO.">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+  <!-- ─── Header ─────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">🖥️</span>
+        <span class="logo-text">OS-Run</span>
+      </div>
+      <p class="tagline">Web Virtual Machine — boot any x86 OS entirely in your browser</p>
+    </div>
+  </header>
+
+  <main class="container" id="mainContent">
+
+    <!-- ─── Launcher ─────────────────────────────────────────────── -->
+    <section id="launcher" class="launcher" aria-label="VM Launcher">
+
+      <h2 class="section-title">Select Operating System</h2>
+
+      <!-- OS Type Cards -->
+      <div class="os-cards" id="osCards" role="group" aria-label="Operating system selection">
+        <button class="os-card active" data-os="linux" type="button">
+          <span class="os-icon" aria-hidden="true">🐧</span>
+          <span class="os-name">Linux</span>
+          <span class="os-desc">Any distribution</span>
+        </button>
+        <button class="os-card" data-os="freedos" type="button">
+          <span class="os-icon" aria-hidden="true">💾</span>
+          <span class="os-name">FreeDOS</span>
+          <span class="os-desc">Free DOS implementation</span>
+        </button>
+        <button class="os-card" data-os="windows" type="button">
+          <span class="os-icon" aria-hidden="true">🪟</span>
+          <span class="os-name">Windows</span>
+          <span class="os-desc">Win 3.1 / 95 / 98</span>
+        </button>
+        <button class="os-card" data-os="macos" type="button">
+          <span class="os-icon" aria-hidden="true">🍎</span>
+          <span class="os-name">macOS</span>
+          <span class="os-desc">Sierra → Tahoe</span>
+        </button>
+        <button class="os-card" data-os="custom" type="button">
+          <span class="os-icon" aria-hidden="true">⚙️</span>
+          <span class="os-name">Custom</span>
+          <span class="os-desc">Any x86 ISO / image</span>
+        </button>
+      </div>
+
+      <!-- Dynamic Configuration Panel -->
+      <div class="config-panel" id="configPanel" aria-live="polite"></div>
+
+      <!-- Launch Button -->
+      <button class="launch-btn" id="launchBtn" type="button">
+        <span class="launch-icon" aria-hidden="true">▶</span>
+        Launch VM
+      </button>
+
+    </section><!-- /launcher -->
+
+
+    <!-- ─── VM Runtime Section ────────────────────────────────────── -->
+    <section id="vmSection" class="vm-section hidden" aria-label="Virtual Machine">
+
+      <!-- Toolbar -->
+      <div class="vm-toolbar" role="toolbar" aria-label="VM controls">
+        <button class="btn btn-secondary" id="backBtn" type="button" title="Return to launcher">
+          ◀ Back
+        </button>
+        <div class="vm-title" id="vmTitle" aria-live="polite">Virtual Machine</div>
+        <div class="vm-controls">
+          <button class="btn btn-icon" id="pauseBtn" type="button" title="Pause / Resume VM">
+            ⏸
+          </button>
+          <button class="btn btn-warning" id="resetBtn" type="button" title="Reset VM">
+            🔄 Reset
+          </button>
+          <button class="btn btn-danger" id="stopBtn" type="button" title="Stop VM">
+            ⏹ Stop
+          </button>
+          <button class="btn btn-secondary btn-icon" id="snapshotBtn" type="button" title="Save snapshot">
+            💾
+          </button>
+          <button class="btn btn-primary btn-icon" id="fullscreenBtn" type="button" title="Toggle fullscreen">
+            ⛶
+          </button>
+        </div>
+      </div>
+
+      <!-- Screen Wrapper -->
+      <div class="vm-wrapper" id="vmWrapper">
+        <div class="vm-screen-wrap">
+          <!-- v86 appends its own <canvas> here -->
+          <div id="screenContainer" class="screen-container"></div>
+
+          <!-- Loading/Status Overlay -->
+          <div class="vm-overlay" id="vmOverlay" role="status" aria-label="VM status">
+            <div class="vm-status">
+              <div class="spinner" id="statusSpinner" aria-hidden="true"></div>
+              <p id="statusText">Initializing…</p>
+              <p id="statusSub" class="status-sub"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Click-to-capture hint -->
+        <p class="screen-hint" id="screenHint" aria-live="polite">
+          Click the screen to capture keyboard &amp; mouse.
+          Press <kbd>Escape</kbd> to release.
+        </p>
+      </div><!-- /vm-wrapper -->
+
+      <!-- Serial Console -->
+      <div class="console-section">
+        <button class="console-toggle" id="consoleToggle" type="button" aria-expanded="false">
+          <span>📟 Serial Console</span>
+          <span class="toggle-arrow" aria-hidden="true">▼</span>
+        </button>
+        <div class="console-output hidden" id="consoleOutput" role="log" aria-label="Serial console output">
+          <div class="console-toolbar">
+            <button class="console-btn" id="consoleClearBtn" type="button">Clear</button>
+            <button class="console-btn" id="consoleDownloadBtn" type="button">Download Log</button>
+          </div>
+          <pre id="serialOutput" tabindex="0"></pre>
+        </div>
+      </div>
+
+    </section><!-- /vmSection -->
+
+  </main>
+
+  <!-- ─── Footer ───────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container">
+      <p>
+        Powered by <a href="https://github.com/copy/v86" target="_blank" rel="noopener noreferrer">v86</a>
+        — x86 PC emulator in pure JavaScript / WebAssembly.
+        No server required — everything runs locally in your browser.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ─── Scripts ──────────────────────────────────────────────── -->
+  <script src="js/os-configs.js"></script>
+  <script src="js/vm-manager.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
